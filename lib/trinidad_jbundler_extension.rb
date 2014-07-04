@@ -13,7 +13,14 @@ module Trinidad
               class_loader.addURL java.io.File.new(jar).to_url
             end
           end
-          JBUNDLER_CLASSPATH.each do |jar|
+          config = JBundler::Config.new
+          vendor = JBundler::Vendor.new(config.vendor_dir)
+          if vendor.vendored?
+            jars = vendor.require_jars
+          else
+            jars = JBUNDLER_CLASSPATH
+          end
+          jars.each do |jar|
             logger.debug "[#{web_app.context_path}] adding jar: #{jar}"
             class_loader.addURL java.io.File.new(jar).to_url
           end
